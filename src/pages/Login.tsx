@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -15,6 +16,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showVerificationMessage, setShowVerificationMessage] = useState(false);
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
 
@@ -38,6 +40,12 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     const { error } = await signUp(email, password, username);
+    if (!error) {
+      setShowVerificationMessage(true);
+      setEmail('');
+      setPassword('');
+      setUsername('');
+    }
     setLoading(false);
   };
 
@@ -62,6 +70,14 @@ const Login = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {showVerificationMessage && (
+              <Alert className="mb-4">
+                <AlertDescription>
+                  Account created successfully! Please check your email and click the verification link before signing in.
+                </AlertDescription>
+              </Alert>
+            )}
+
             <Tabs defaultValue="signin" className="space-y-4">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="signin">Sign In</TabsTrigger>
@@ -130,6 +146,9 @@ const Login = () => {
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? 'Creating Account...' : 'Sign Up'}
                   </Button>
+                  <p className="text-sm text-muted-foreground text-center">
+                    You'll receive a verification email after signing up
+                  </p>
                 </form>
               </TabsContent>
             </Tabs>
