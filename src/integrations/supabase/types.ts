@@ -9,7 +9,118 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      bookmarks: {
+        Row: {
+          created_at: string | null
+          id: string
+          line_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          line_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          line_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookmarks_line_id_fkey"
+            columns: ["line_id"]
+            isOneToOne: false
+            referencedRelation: "lines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      likes: {
+        Row: {
+          created_at: string | null
+          id: string
+          line_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          line_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          line_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "likes_line_id_fkey"
+            columns: ["line_id"]
+            isOneToOne: false
+            referencedRelation: "lines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lines: {
+        Row: {
+          author_id: string
+          created_at: string | null
+          id: string
+          likes_count: number | null
+          text: string
+          theme: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          created_at?: string | null
+          id?: string
+          likes_count?: number | null
+          text: string
+          theme?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          created_at?: string | null
+          id?: string
+          likes_count?: number | null
+          text?: string
+          theme?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_premium: boolean | null
+          updated_at: string | null
+          username: string
+        }
+        Insert: {
+          created_at?: string | null
+          id: string
+          is_premium?: boolean | null
+          updated_at?: string | null
+          username: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_premium?: boolean | null
+          updated_at?: string | null
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
