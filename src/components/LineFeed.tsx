@@ -5,7 +5,19 @@ import { LineCard } from './LineCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { DatabaseLine } from '@/types';
+
+interface LineWithProfile {
+  id: string;
+  text: string;
+  author_id: string;
+  theme: string;
+  likes_count: number;
+  created_at: string;
+  updated_at: string;
+  profiles: {
+    username: string;
+  } | null;
+}
 
 export const LineFeed = () => {
   const [lines, setLines] = useState<any[]>([]);
@@ -21,7 +33,7 @@ export const LineFeed = () => {
         .from('lines')
         .select(`
           *,
-          profiles (username)
+          profiles!lines_author_id_fkey (username)
         `)
         .order('created_at', { ascending: false });
 
@@ -66,7 +78,7 @@ export const LineFeed = () => {
       }
 
       // Transform data to match Line interface
-      const transformedLines = (linesData || []).map((line: DatabaseLine) => ({
+      const transformedLines = (linesData || []).map((line: LineWithProfile) => ({
         id: line.id,
         text: line.text,
         author: line.profiles?.username || 'Unknown',

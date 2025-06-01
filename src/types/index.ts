@@ -25,14 +25,3 @@ export interface Profile {
   created_at: string;
   updated_at: string;
 }
-
-export interface DatabaseLine {
-  id: string;
-  text: string;
-  author_id: string;
-  theme: string;
-  likes_count: number;
-  created_at: string;
-  updated_at: string;
-  profiles?: Profile;
-}

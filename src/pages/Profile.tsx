@@ -10,6 +10,23 @@ import { useNavigate } from 'react-router-dom';
 import { LineCard } from '@/components/LineCard';
 import { supabase } from '@/integrations/supabase/client';
 
+interface LineWithProfile {
+  id: string;
+  text: string;
+  author_id: string;
+  theme: string;
+  likes_count: number;
+  created_at: string;
+  updated_at: string;
+  profiles: {
+    username: string;
+  } | null;
+}
+
+interface BookmarkWithLine {
+  lines: LineWithProfile;
+}
+
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [newUsername, setNewUsername] = useState('');
@@ -41,7 +58,7 @@ const Profile = () => {
         .from('lines')
         .select(`
           *,
-          profiles (username)
+          profiles!lines_author_id_fkey (username)
         `)
         .eq('author_id', user.id)
         .order('created_at', { ascending: false });
@@ -52,7 +69,7 @@ const Profile = () => {
         .select(`
           lines (
             *,
-            profiles (username)
+            profiles!lines_author_id_fkey (username)
           )
         `)
         .eq('user_id', user.id);
@@ -60,7 +77,7 @@ const Profile = () => {
       // Fetch user's likes and bookmarks
       const lineIds = [
         ...(linesData || []).map(line => line.id),
-        ...(bookmarksData || []).map(bookmark => bookmark.lines.id)
+        ...(bookmarksData || []).map((bookmark: BookmarkWithLine) => bookmark.lines.id)
       ];
 
       const [likesResponse, allBookmarksResponse] = await Promise.all([
@@ -80,7 +97,7 @@ const Profile = () => {
       const userBookmarks = allBookmarksResponse.data?.map(bookmark => bookmark.line_id) || [];
 
       // Transform user lines
-      const transformedUserLines = (linesData || []).map(line => ({
+      const transformedUserLines = (linesData || []).map((line: LineWithProfile) => ({
         id: line.id,
         text: line.text,
         author: line.profiles?.username || 'Unknown',
@@ -93,7 +110,7 @@ const Profile = () => {
       }));
 
       // Transform bookmarked lines
-      const transformedBookmarkedLines = (bookmarksData || []).map(bookmark => ({
+      const transformedBookmarkedLines = (bookmarksData || []).map((bookmark: BookmarkWithLine) => ({
         id: bookmark.lines.id,
         text: bookmark.lines.text,
         author: bookmark.lines.profiles?.username || 'Unknown',
