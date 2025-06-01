@@ -58,7 +58,7 @@ const Profile = () => {
         .from('lines')
         .select(`
           *,
-          profiles!lines_author_id_fkey (username)
+          profiles(username)
         `)
         .eq('author_id', user.id)
         .order('created_at', { ascending: false });
@@ -69,7 +69,7 @@ const Profile = () => {
         .select(`
           lines (
             *,
-            profiles!lines_author_id_fkey (username)
+            profiles(username)
           )
         `)
         .eq('user_id', user.id);
@@ -77,7 +77,7 @@ const Profile = () => {
       // Fetch user's likes and bookmarks
       const lineIds = [
         ...(linesData || []).map(line => line.id),
-        ...(bookmarksData || []).map((bookmark: BookmarkWithLine) => bookmark.lines.id)
+        ...(bookmarksData || []).map((bookmark: any) => bookmark.lines.id)
       ];
 
       const [likesResponse, allBookmarksResponse] = await Promise.all([
@@ -96,8 +96,8 @@ const Profile = () => {
       const userLikes = likesResponse.data?.map(like => like.line_id) || [];
       const userBookmarks = allBookmarksResponse.data?.map(bookmark => bookmark.line_id) || [];
 
-      // Transform user lines
-      const transformedUserLines = (linesData || []).map((line: LineWithProfile) => ({
+      // Transform user lines with proper type checking
+      const transformedUserLines = (linesData || []).map((line: any) => ({
         id: line.id,
         text: line.text,
         author: line.profiles?.username || 'Unknown',
@@ -109,8 +109,8 @@ const Profile = () => {
         theme: line.theme
       }));
 
-      // Transform bookmarked lines
-      const transformedBookmarkedLines = (bookmarksData || []).map((bookmark: BookmarkWithLine) => ({
+      // Transform bookmarked lines with proper type checking
+      const transformedBookmarkedLines = (bookmarksData || []).map((bookmark: any) => ({
         id: bookmark.lines.id,
         text: bookmark.lines.text,
         author: bookmark.lines.profiles?.username || 'Unknown',

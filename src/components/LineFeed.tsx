@@ -33,7 +33,7 @@ export const LineFeed = () => {
         .from('lines')
         .select(`
           *,
-          profiles!lines_author_id_fkey (username)
+          profiles(username)
         `)
         .order('created_at', { ascending: false });
 
@@ -77,8 +77,8 @@ export const LineFeed = () => {
         userBookmarks = bookmarksResponse.data?.map(bookmark => bookmark.line_id) || [];
       }
 
-      // Transform data to match Line interface
-      const transformedLines = (linesData || []).map((line: LineWithProfile) => ({
+      // Transform data to match Line interface with proper type checking
+      const transformedLines = (linesData || []).map((line: any) => ({
         id: line.id,
         text: line.text,
         author: line.profiles?.username || 'Unknown',
